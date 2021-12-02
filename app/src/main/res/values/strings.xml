@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MSP_Android_OpenGL_ES</string>
+    <string name="title_activity_gl_es30_jni_view">GlEs30JniView</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
