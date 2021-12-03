@@ -1,14 +1,15 @@
 #include "renderer.h"
+
 #include "gl/gl_util.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <ctime>
 
 Renderer::Renderer()
-    : mProjectionMat(1.0f)
-    , mViewMat(1.0f)
-    , mDeltaTime(0.0f)
-    , mLastFrameTime(std::chrono::system_clock::now())
+        : mProjectionMat(1.0f)
+        , mViewMat(1.0f)
+        , mDeltaTime(0.0f)
+        , mLastFrameTime(std::chrono::system_clock::now())
 {
 }
 
@@ -26,7 +27,7 @@ void Renderer::Step() {
     std::chrono::duration<float> elapsed_seconds = now - mLastFrameTime;
     mDeltaTime = elapsed_seconds.count();
 
-    mMesh.mModel = glm::rotate(mMesh.mModel, glm::radians(90.0f) * mDeltaTime, glm::vec3(5.0f, 5.0f, 1.0f));
+//    mMesh.mModel = glm::rotate(mMesh.mModel, glm::radians(90.0f) * mDeltaTime, glm::vec3(5.0f, 5.0f, 1.0f));
 
     mLastFrameTime = now;
 }

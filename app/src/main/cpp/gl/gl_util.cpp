@@ -1,4 +1,6 @@
 #include "gl_util.h"
+
+#include "gl_util.h"
 #include "../util.h"
 
 #include <malloc.h>

@@ -6,7 +6,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "at.tributsch.msp_android_opengl_es"
+        applicationId "at.tributsch.msp_mobile_model_viewer"
         minSdk 18
         targetSdk 31
         versionCode 1
@@ -35,9 +35,6 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.10.2'
         }
-    }
-    buildFeatures {
-        viewBinding true
     }
 }
 

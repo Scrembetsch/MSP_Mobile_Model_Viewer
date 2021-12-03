@@ -1,5 +1,5 @@
-#ifndef MSP_ANDROID_OPENGL_ES_GL_UTIL_H
-#define MSP_ANDROID_OPENGL_ES_GL_UTIL_H
+#ifndef MSP_MOBILE_MODEL_VIEWER_GL_UTIL_H
+#define MSP_MOBILE_MODEL_VIEWER_GL_UTIL_H
 
 #include "gl.h"
 
@@ -10,4 +10,4 @@ namespace GlUtil {
     GLuint CreateProgram(const char* vtxSrc, const char* fragSrc);
 };
 
-#endif //MSP_ANDROID_OPENGL_ES_GL_UTIL_H
+#endif //MSP_MOBILE_MODEL_VIEWER_GL_UTIL_H

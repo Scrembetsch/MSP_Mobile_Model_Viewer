@@ -1,4 +1,4 @@
-package at.tributsch.msp_android_opengl_es;
+package at.tributsch.msp_mobile_model_viewer;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("at.tributsch.msp_android_opengl_es", appContext.getPackageName());
+        assertEquals("at.tributsch.msp_mobile_model_viewer", appContext.getPackageName());
     }
 }

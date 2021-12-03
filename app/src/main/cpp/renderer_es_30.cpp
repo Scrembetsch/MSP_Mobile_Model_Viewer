@@ -1,10 +1,7 @@
-#include "renderer_es_3x.h"
-#include "primitive/cube.h"
+#include "renderer_es_30.h"
 #include "gl/gl_util.h"
 #include "glm/glm.hpp"
 #include "util.h"
-
-#include <EGL/egl.h>
 
 #define STR(s) #s
 #define STRV(s) STR(s)
@@ -34,8 +31,8 @@ static const char FRAGMENT_SHADER[] =
         "    outColor = vColor;\n"
         "}\n";
 
-Renderer* CreateES3Renderer() {
-    RendererES3* renderer = new RendererES3;
+Renderer* CreateES30Renderer() {
+    RendererES30* renderer = new RendererES30;
     if (!renderer->Init()) {
         delete renderer;
         return nullptr;
@@ -43,14 +40,14 @@ Renderer* CreateES3Renderer() {
     return renderer;
 }
 
-RendererES3::RendererES3()
-    : Renderer()
-    , mEglContext(eglGetCurrentContext())
-    , mProgram(0)
+RendererES30::RendererES30()
+        : Renderer()
+        , mEglContext(eglGetCurrentContext())
+        , mProgram(0)
 {
 }
 
-bool RendererES3::Init() {
+bool RendererES30::Init() {
     mProgram = GlUtil::CreateProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     if (!mProgram)
         return false;
@@ -61,7 +58,7 @@ bool RendererES3::Init() {
     return true;
 }
 
-RendererES3::~RendererES3() {
+RendererES30::~RendererES30() {
     /* The destructor may be called after the context has already been
      * destroyed, in which case our objects have already been destroyed.
      *
@@ -73,9 +70,9 @@ RendererES3::~RendererES3() {
     glDeleteProgram(mProgram);
 }
 
-void RendererES3::Draw() {
+void RendererES30::Draw() {
     glUseProgram(mProgram);
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uProjection"), 1, GL_FALSE, &mProjectionMat[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uView"), 1, GL_FALSE, &mViewMat[0][0]);
-    mMesh.Draw(mProgram);
+//    mMesh.Draw(mProgram);
 }

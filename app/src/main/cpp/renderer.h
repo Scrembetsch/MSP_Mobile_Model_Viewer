@@ -1,8 +1,7 @@
-#ifndef MSP_ANDROID_OPENGL_ES_RENDERER_H
-#define MSP_ANDROID_OPENGL_ES_RENDERER_H
+#ifndef MSP_MOBILE_MODEL_VIEWER_RENDERER_H
+#define MSP_MOBILE_MODEL_VIEWER_RENDERER_H
 
 #include "glm/glm.hpp"
-#include "primitive/cube.h"
 
 #include <chrono>
 
@@ -19,7 +18,6 @@ protected:
 
     glm::mat4 mProjectionMat;
     glm::mat4 mViewMat;
-    Cube mMesh;
 
 private:
     void Step();
@@ -28,4 +26,4 @@ private:
     std::chrono::time_point<std::chrono::system_clock> mLastFrameTime;
 };
 
-#endif //MSP_ANDROID_OPENGL_ES_RENDERER_H
+#endif //MSP_MOBILE_MODEL_VIEWER_RENDERER_H

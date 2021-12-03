@@ -1,4 +1,4 @@
-package at.tributsch.msp_android_opengl_es;
+package at.tributsch.msp_mobile_model_viewer;
 
 import org.junit.Test;
 
