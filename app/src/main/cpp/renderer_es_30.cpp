@@ -54,7 +54,7 @@ bool RendererES30::Init() {
 
     glEnable(GL_DEPTH_TEST);
 
-    LOGV("RENDERER3x", "Using OpenGL ES 3.0 renderer");
+    LOGV("RENDERER30", "Using OpenGL ES 3.0 renderer");
     return true;
 }
 
@@ -75,4 +75,9 @@ void RendererES30::Draw() {
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uProjection"), 1, GL_FALSE, &mProjectionMat[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uView"), 1, GL_FALSE, &mViewMat[0][0]);
 //    mMesh.Draw(mProgram);
+
+    for(int i = 0; i < mNumMeshes; i++)
+    {
+        mMeshes[i].Draw(mProgram);
+    }
 }

@@ -14,11 +14,14 @@ Renderer::Renderer()
 }
 
 Renderer::~Renderer() {
+    delete[] mMeshes;
 }
 
 void Renderer::Resize(int w, int h) {
-    glViewport(0, 0, w, h);
-    mProjectionMat = glm::perspective(glm::radians(45.0f), float(w) / float(h), 0.1f, 100.0f);
+    mWidth = w;
+    mHeight = h;
+    glViewport(0, 0, mWidth, mHeight);
+    mProjectionMat = glm::perspective(glm::radians(mScale), float(mWidth) / float(mHeight), 0.1f, 100.0f);
     mViewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
@@ -27,7 +30,7 @@ void Renderer::Step() {
     std::chrono::duration<float> elapsed_seconds = now - mLastFrameTime;
     mDeltaTime = elapsed_seconds.count();
 
-//    mMesh.mModel = glm::rotate(mMesh.mModel, glm::radians(90.0f) * mDeltaTime, glm::vec3(5.0f, 5.0f, 1.0f));
+    mMesh.mModel = glm::rotate(mMesh.mModel, glm::radians(90.0f) * mDeltaTime, glm::vec3(5.0f, 5.0f, 1.0f));
 
     mLastFrameTime = now;
 }
@@ -39,6 +42,13 @@ void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     Draw();
     GlUtil::CheckGlError("Renderer::Render");
+}
+
+void Renderer::SetScale(float scale)
+{
+    mScale *= scale;
+    mProjectionMat = glm::perspective(glm::radians(mScale), float(mWidth) / float(mHeight), 0.1f, 100.0f);
+    mViewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 float Renderer::GetDeltaTime() {

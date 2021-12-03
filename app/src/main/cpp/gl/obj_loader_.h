@@ -4,7 +4,7 @@
 
 // Iostream - STD I/O Library
 #include <iostream>
-
+#include <sstream>
 // Vector - STD Vector/Array Library
 #include <vector>
 
@@ -16,6 +16,8 @@
 
 // Math.h - STD math Library
 #include <math.h>
+
+#include <android/asset_manager.h>
 
 // Print progress to console while loading (large models)
 #define OBJL_CONSOLE_OUTPUT
@@ -422,23 +424,38 @@ namespace objl
 			LoadedMeshes.clear();
 		}
 
+		std::string LoadFileContent(AAssetManager* assetManager, std::string path)
+		{
+			AAsset* file = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
+			// Get the file length
+			size_t fileLength = AAsset_getLength(file);
+
+			// Allocate memory to read your file
+			char* fileContent = new char[fileLength+1];
+
+			// Read your file
+			AAsset_read(file, fileContent, fileLength);
+			// For safety you can add a 0 terminating character at the end of your file ...
+			fileContent[fileLength] = '\0';
+
+			std::string ret(fileContent);
+			delete[] fileContent;
+			return ret;
+		}
+
 		// Load a file into the loader
 		//
 		// If file is loaded return true
 		//
 		// If the file is unable to be found
 		// or unable to be loaded return false
-		bool LoadFile(std::string Path)
+		bool LoadFile(AAssetManager* assetManager, std::string path)
 		{
 			// If the file is not an .obj file return false
-			if (Path.substr(Path.size() - 4, 4) != ".obj")
+			if (path.substr(path.size() - 4, 4) != ".obj")
 				return false;
 
-
-			std::ifstream file(Path);
-
-			if (!file.is_open())
-				return false;
+			std::string fileContent = LoadFileContent(assetManager, path);
 
 			LoadedMeshes.clear();
 			LoadedVertices.clear();
@@ -464,7 +481,8 @@ namespace objl
 			#endif
 
 			std::string curline;
-			while (std::getline(file, curline))
+			std::stringstream fileStream(fileContent);
+			while (std::getline(fileStream, curline))
 			{
 				#ifdef OBJL_CONSOLE_OUTPUT
 				if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
@@ -643,7 +661,7 @@ namespace objl
 
 					// Generate a path to the material file
 					std::vector<std::string> temp;
-					algorithm::split(Path, temp, "/");
+					algorithm::split(path, temp, "/");
 
 					std::string pathtomat = "";
 
@@ -663,7 +681,7 @@ namespace objl
 					#endif
 
 					// Load Materials
-					LoadMaterials(pathtomat);
+					LoadMaterials(assetManager, pathtomat);
 				}
 			}
 
@@ -682,8 +700,6 @@ namespace objl
 				// Insert Mesh
 				LoadedMeshes.push_back(tempMesh);
 			}
-
-			file.close();
 
 			// Set Materials for each Mesh
 			for (int i = 0; i < MeshMatNames.size(); i++)
@@ -1003,17 +1019,13 @@ namespace objl
 		}
 
 		// Load Materials from .mtl file
-		bool LoadMaterials(std::string path)
+		bool LoadMaterials(AAssetManager* assetManager, std::string path)
 		{
 			// If the file is not a material file return false
 			if (path.substr(path.size() - 4, path.size()) != ".mtl")
 				return false;
 
-			std::ifstream file(path);
-
-			// If the file is not found return false
-			if (!file.is_open())
-				return false;
+			std::string fileContent(LoadFileContent(assetManager, path));
 
 			Material tempMaterial;
 
@@ -1021,7 +1033,8 @@ namespace objl
 
 			// Go through each line looking for material variables
 			std::string curline;
-			while (std::getline(file, curline))
+			std::stringstream fileStream(fileContent);
+			while (std::getline(fileStream, curline))
 			{
 				// new material and material name
 				if (algorithm::firstToken(curline) == "newmtl")

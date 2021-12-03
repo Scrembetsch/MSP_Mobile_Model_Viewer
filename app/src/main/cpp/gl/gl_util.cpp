@@ -1,9 +1,11 @@
 #include "gl_util.h"
 
-#include "gl_util.h"
+#include "obj_loader_.h"
+
 #include "../util.h"
 
 #include <malloc.h>
+#include <filesystem>
 
 bool GlUtil::CheckGlError(const char* funcName) {
     GLint err = glGetError();
@@ -94,4 +96,30 @@ GLuint GlUtil::CreateProgram(const char* vtxSrc, const char* fragSrc) {
     glDeleteShader(vtxShader);
     glDeleteShader(fragShader);
     return program;
+}
+
+void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, Mesh*& meshes, unsigned int& numMeshes)
+{
+    objl::Loader loader;
+    loader.LoadFile(assetManager, path);
+
+    meshes = new Mesh[loader.LoadedMeshes.size()];
+    numMeshes = loader.LoadedMeshes.size();
+
+    for(int i = 0; i < loader.LoadedMeshes.size(); i++) {
+        std::vector<unsigned int>& loadedIndices = loader.LoadedMeshes[i].Indices;
+        std::vector<objl::Vertex>& loadedVertices = loader.LoadedMeshes[i].Vertices;
+
+        Vertex *vertices = new Vertex[loadedIndices.size()];
+        for (int j = 0; j < loadedIndices.size(); j++) {
+            vertices[j].Position[0] = loadedVertices[loadedIndices[j]].Position.X;
+            vertices[j].Position[1] = loadedVertices[loadedIndices[j]].Position.Y;
+            vertices[j].Position[2] = loadedVertices[loadedIndices[j]].Position.Z;
+            vertices[j].Color[0] = 0.0f;
+            vertices[j].Color[1] = 0.0f;
+            vertices[j].Color[2] = 0.0f;
+        }
+        meshes[i].Init(vertices, loadedIndices.size());
+        delete[] vertices;
+    }
 }
