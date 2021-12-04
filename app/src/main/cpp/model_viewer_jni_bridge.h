@@ -14,5 +14,6 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
 extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Resize(JNIEnv* env, jclass obj, jint width, jint height);
 extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Step(JNIEnv* env, jclass obj);
 extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_SetScale(JNIEnv* env, jclass obj, jfloat scale);
+extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Move(JNIEnv* env, jclass obj, jfloat moveX, jfloat moveY);
 
 #endif //MSP_MOBILE_MODEL_VIEWER_MODEL_VIEWER_JNI_BRIDGE_H

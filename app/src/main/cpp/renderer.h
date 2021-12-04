@@ -12,6 +12,7 @@ public:
     void Resize(int w, int h);
     void Render();
     void SetScale(float scale);
+    void MoveCamera(float x, float y);
 
     Mesh* mMeshes;
     unsigned int mNumMeshes;
@@ -28,11 +29,15 @@ protected:
 
 private:
     void Step();
+    void UpdateMatrices();
 
     float mDeltaTime;
     float mScale = 45.0f;
     float mWidth = 1080;
     float mHeight = 1920;
+
+    glm::vec3 mCameraPos = glm::vec3 (0.0f, 0.0f, 5.0f);
+
     std::chrono::time_point<std::chrono::system_clock> mLastFrameTime;
 };
 

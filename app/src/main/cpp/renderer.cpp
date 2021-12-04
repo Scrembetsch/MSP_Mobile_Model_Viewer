@@ -21,8 +21,7 @@ void Renderer::Resize(int w, int h) {
     mWidth = w;
     mHeight = h;
     glViewport(0, 0, mWidth, mHeight);
-    mProjectionMat = glm::perspective(glm::radians(mScale), float(mWidth) / float(mHeight), 0.1f, 100.0f);
-    mViewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    UpdateMatrices();
 }
 
 void Renderer::Step() {
@@ -47,8 +46,22 @@ void Renderer::Render() {
 void Renderer::SetScale(float scale)
 {
     mScale *= scale;
+    UpdateMatrices();
+}
+
+void Renderer::MoveCamera(float x, float y)
+{
+    glm::mat4 rot_mat = glm::rotate(glm::mat4(1.0f), glm::radians(x * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+    mCameraPos = glm::vec3(glm::vec4(mCameraPos, 1.0f) * rot_mat);
+    rot_mat = glm::rotate(glm::mat4(1.0f), glm::radians(y * 0.1f), glm::vec3(0.0f, 0.0f, 1.0f));
+    mCameraPos = glm::vec3(glm::vec4(mCameraPos, 1.0f) * rot_mat);
+    UpdateMatrices();
+}
+
+void Renderer::UpdateMatrices()
+{
     mProjectionMat = glm::perspective(glm::radians(mScale), float(mWidth) / float(mHeight), 0.1f, 100.0f);
-    mViewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    mViewMat = glm::lookAt(mCameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 float Renderer::GetDeltaTime() {

@@ -11,4 +11,5 @@ public class ModelViewerJniBridge {
     public static native void Resize(int width, int height);
     public static native void Step();
     public static native void SetScale(float scale);
+    public static native void Move(float x, float y);
 }

@@ -50,3 +50,11 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
         g_Renderer->SetScale(scale);
     }
 }
+
+extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Move(JNIEnv* env, jclass obj, jfloat moveX, jfloat moveY)
+{
+    if(g_Renderer)
+    {
+        g_Renderer->MoveCamera(moveX, moveY);
+    }
+}
