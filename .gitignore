@@ -2,6 +2,7 @@
 *.mtl
 *.obj
 *.png
+*.hdr
 
 
 # Built application files
