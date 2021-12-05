@@ -3,32 +3,29 @@
 #include "glm/glm.hpp"
 #include "util.h"
 
-#define STR(s) #s
-#define STRV(s) STR(s)
-
-#define POS_ATTRIB 0
-#define COLOR_ATTRIB 1
-
 static const char VERTEX_SHADER[] =
         "#version 300 es\n"
-        "layout(location = " STRV(POS_ATTRIB) ") in vec3 aPos;\n"
-        "layout(location=" STRV(COLOR_ATTRIB) ") in vec3 aColor;\n"
+        "layout(location = 0) in vec3 aPos;\n"
+        "layout(location = 1) in vec2 aTexCoord;\n"
+        "layout(location = 2) in vec3 aNormal;\n"
         "uniform mat4 uProjection;\n"
         "uniform mat4 uView;\n"
         "uniform mat4 uModel;\n"
-        "out vec4 vColor;\n"
+        "out vec2 vTexCoords;\n"
         "void main() {\n"
         "    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);\n"
-        "    vColor = vec4(aColor, 1.0);\n"
+        "    vTexCoords = aTexCoord;\n"
         "}\n";
 
 static const char FRAGMENT_SHADER[] =
         "#version 300 es\n"
         "precision mediump float;\n"
-        "in vec4 vColor;\n"
+        "in vec2 vTexCoords;\n"
+        "uniform sampler2D uDiffuseMap;\n"
+        "uniform vec3 uDiffuse;\n"
         "out vec4 outColor;\n"
         "void main() {\n"
-        "    outColor = vColor;\n"
+        "    outColor = texture(uDiffuseMap, vTexCoords) * vec4(uDiffuse, 1.0f);\n"
         "}\n";
 
 Renderer* CreateES30Renderer() {

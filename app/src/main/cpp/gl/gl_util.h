@@ -12,8 +12,9 @@ namespace GlUtil {
     void PrintGlString(const char* name, GLenum s);
     GLuint CreateShader(GLenum shaderType, const char* src);
     GLuint CreateProgram(const char* vtxSrc, const char* fragSrc);
+    GLuint LoadTexture(AAssetManager* assetManager, const std::string& filepath);
 
-    void LoadObjMeshes(AAssetManager* assetManager, const std::string& path, Mesh*& meshes, unsigned int& numMeshes);
+    void LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
 };
 
 #endif //MSP_MOBILE_MODEL_VIEWER_GL_UTIL_H

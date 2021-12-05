@@ -1,6 +1,8 @@
 #include "model_viewer_jni_bridge.h"
 
 #include "gl/gl_util.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "util.h"
 
 #include <cstring>
@@ -26,7 +28,15 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
         LOGE("JNI_BRIDGE", "Unsupported OpenGL ES version");
     }
 
-    GlUtil::LoadObjMeshes(g_AssetManager, "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+    GlUtil::LoadObjMeshes(g_AssetManager, "cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "tank/", "old_tank.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+
+    for(int i = 0; i < g_Renderer->mNumMeshes; i++)
+    {
+        float scale = 0.01f;
+        g_Renderer->mMeshes[i].mModel = glm::scale(g_Renderer->mMeshes[i].mModel, glm::vec3(scale, scale, scale));
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Resize(JNIEnv* env, jclass obj, jint width, jint height)

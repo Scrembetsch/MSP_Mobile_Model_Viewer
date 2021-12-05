@@ -7,6 +7,9 @@
 #include <malloc.h>
 #include <filesystem>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 bool GlUtil::CheckGlError(const char* funcName) {
     GLint err = glGetError();
     if (err != GL_NO_ERROR) {
@@ -98,10 +101,51 @@ GLuint GlUtil::CreateProgram(const char* vtxSrc, const char* fragSrc) {
     return program;
 }
 
-void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, Mesh*& meshes, unsigned int& numMeshes)
+GLuint GlUtil::LoadTexture(AAssetManager* assetManager, const std::string& filepath)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+
+    AAsset * file = AAssetManager_open (assetManager, filepath.c_str(), AASSET_MODE_UNKNOWN);
+    off_t assetLength = AAsset_getLength (file);
+    unsigned char * fileData = (unsigned char *) AAsset_getBuffer (file);
+
+    unsigned char * data = stbi_load_from_memory (fileData, assetLength, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        LOGE("GL_UTIL", "Texture failed to load at path: %s", filepath.c_str());
+        stbi_image_free(data);
+    }
+    return textureID;
+}
+
+void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
 {
     objl::Loader loader;
-    loader.LoadFile(assetManager, path);
+    loader.LoadFile(assetManager, path + filename);
 
     meshes = new Mesh[loader.LoadedMeshes.size()];
     numMeshes = loader.LoadedMeshes.size();
@@ -115,11 +159,22 @@ void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path,
             vertices[j].Position[0] = loadedVertices[loadedIndices[j]].Position.X;
             vertices[j].Position[1] = loadedVertices[loadedIndices[j]].Position.Y;
             vertices[j].Position[2] = loadedVertices[loadedIndices[j]].Position.Z;
-            vertices[j].Color[0] = 0.0f;
-            vertices[j].Color[1] = 0.0f;
-            vertices[j].Color[2] = 0.0f;
+            vertices[j].TexCoord[0] = loadedVertices[loadedIndices[j]].TextureCoordinate.X;
+            vertices[j].TexCoord[1] = loadedVertices[loadedIndices[j]].TextureCoordinate.Y;
+            vertices[j].Normal[0] = loadedVertices[loadedIndices[j]].Normal.X;
+            vertices[j].Normal[1] = loadedVertices[loadedIndices[j]].Normal.Y;
+            vertices[j].Normal[2] = loadedVertices[loadedIndices[j]].Normal.Z;
         }
         meshes[i].Init(vertices, loadedIndices.size());
+        meshes[i].mMaterial.Diffuse[0] = loader.LoadedMeshes[i].MeshMaterial.Kd.X;
+        meshes[i].mMaterial.Diffuse[1] = loader.LoadedMeshes[i].MeshMaterial.Kd.Y;
+        meshes[i].mMaterial.Diffuse[2] = loader.LoadedMeshes[i].MeshMaterial.Kd.Z;
+
+        if(!loader.LoadedMeshes[i].MeshMaterial.map_Kd.empty())
+        {
+            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
+        }
+
         delete[] vertices;
     }
 }

@@ -2,6 +2,7 @@
 #define MSP_ANDROID_OPENGL_ES_MESH_H
 
 #include "vertex.h"
+#include "material.h"
 
 class Mesh {
 public:
@@ -13,6 +14,7 @@ public:
     void Draw(GLuint shader) const;
 
     glm::mat4 mModel;
+    Material mMaterial;
 
 protected:
     GLuint mVao;

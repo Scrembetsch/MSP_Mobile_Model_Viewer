@@ -6,6 +6,8 @@ set(OPENGL_LIB GLESv3)
 
 add_library(msp_mobile_model_viewer SHARED
         gl/gl_util.cpp
+        primitive/texture.cpp
+        primitive/material.cpp
         primitive/vertex.cpp
         primitive/mesh.cpp
         primitive/cube.cpp

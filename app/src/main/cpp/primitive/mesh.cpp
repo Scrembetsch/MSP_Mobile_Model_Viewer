@@ -39,13 +39,16 @@ void Mesh::Init(const Vertex* model, unsigned int numVertices)
     glBindVertexArray(mVao);
     glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetPositionOffset());
     glEnableVertexAttribArray(Vertex::Attribute::POSITION);
-    glVertexAttribPointer(Vertex::Attribute::COLOR, Vertex::GetColorSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetColorOffset());
-    glEnableVertexAttribArray(Vertex::Attribute::COLOR);
+    glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetTexCoordOffset());
+    glEnableVertexAttribArray(Vertex::Attribute::TEXCOORD);
+    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetNormalOffset());
+    glEnableVertexAttribArray(Vertex::Attribute::NORMAL);
 }
 
 void Mesh::Draw(GLuint shader) const
 {
     glUniformMatrix4fv(glGetUniformLocation(shader, "uModel"), 1, GL_FALSE, &mModel[0][0]);
+    mMaterial.Apply(shader);
     glBindVertexArray(mVao);
     glDrawArrays(GL_TRIANGLES, 0, mNumVertices);
 }
