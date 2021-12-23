@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fno-rtti -fno-exceptions -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-rtti -fno-exceptions -Wall")
 set(OPENGL_LIB GLESv3)
 
 add_library(msp_mobile_model_viewer SHARED
         gl/gl_util.cpp
+        gl/etc_header.cpp
         primitive/texture.cpp
         primitive/material.cpp
         primitive/vertex.cpp

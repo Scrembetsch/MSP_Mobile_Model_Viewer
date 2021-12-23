@@ -4,6 +4,7 @@
 
 #include "../util.h"
 
+#include <cmath>
 #include <malloc.h>
 #include <filesystem>
 
@@ -142,6 +143,27 @@ GLuint GlUtil::LoadTexture(AAssetManager* assetManager, const std::string& filep
     return textureID;
 }
 
+GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    AAsset * file = AAssetManager_open (assetManager, filepath.c_str(), AASSET_MODE_UNKNOWN);
+    off_t assetLength = AAsset_getLength (file);
+    unsigned char * fileData = (unsigned char *) AAsset_getBuffer (file);
+
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, 2048, 2048, 0, ceil(2048/4) * ceil(2048/4) * 8 , fileData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    return textureID;
+}
+
 void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
 {
     objl::Loader loader;
@@ -172,7 +194,8 @@ void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path,
 
         if(!loader.LoadedMeshes[i].MeshMaterial.map_Kd.empty())
         {
-            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
+//            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
+            meshes[i].mMaterial.Texture.mTex = LoadPkmTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
         }
 
         delete[] vertices;

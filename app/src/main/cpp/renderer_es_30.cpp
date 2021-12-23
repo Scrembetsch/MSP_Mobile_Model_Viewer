@@ -56,12 +56,6 @@ bool RendererES30::Init() {
 }
 
 RendererES30::~RendererES30() {
-    /* The destructor may be called after the context has already been
-     * destroyed, in which case our objects have already been destroyed.
-     *
-     * If the context exists, it must be current. This only happens when we're
-     * cleaning up after a failed Init().
-     */
     if (eglGetCurrentContext() != mEglContext)
         return;
     glDeleteProgram(mProgram);

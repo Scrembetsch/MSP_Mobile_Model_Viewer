@@ -28,13 +28,15 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
         LOGE("JNI_BRIDGE", "Unsupported OpenGL ES version");
     }
 
-    GlUtil::LoadObjMeshes(g_AssetManager, "cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+    GlUtil::LoadObjMeshes(g_AssetManager, "cube/", "box.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "simple_cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadObjMeshes(g_AssetManager, "tank/", "old_tank.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadObjMeshes(g_AssetManager, "box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "tree/", "objSignal.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 
     for(int i = 0; i < g_Renderer->mNumMeshes; i++)
     {
-        float scale = 0.01f;
+        float scale = 1.00f;
         g_Renderer->mMeshes[i].mModel = glm::scale(g_Renderer->mMeshes[i].mModel, glm::vec3(scale, scale, scale));
     }
 }
