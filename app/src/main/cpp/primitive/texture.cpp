@@ -1,4 +1,12 @@
 #include "texture.h"
+#include "../gl/gl_util.h"
+
+GLuint Texture::sWhite = 0;
+
+void Texture::Init(AAssetManager* assetManager, const std::string& whitePath)
+{
+    sWhite = GlUtil::LoadTexture(assetManager, whitePath);
+}
 
 Texture::Texture(GLuint tex, GLuint texLocation)
         : mTex(tex)
@@ -8,7 +16,8 @@ Texture::Texture(GLuint tex, GLuint texLocation)
 
 Texture::~Texture()
 {
-    if (mTex != 0)
+    if (mTex != 0
+        && mTex != sWhite)
     {
         glDeleteTextures(1, &mTex);
         mTex = 0;

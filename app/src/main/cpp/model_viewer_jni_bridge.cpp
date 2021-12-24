@@ -28,15 +28,22 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
         LOGE("JNI_BRIDGE", "Unsupported OpenGL ES version");
     }
 
-    GlUtil::LoadObjMeshes(g_AssetManager, "cube/", "box.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadObjMeshes(g_AssetManager, "simple_cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadObjMeshes(g_AssetManager, "tank/", "old_tank.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadObjMeshes(g_AssetManager, "box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadObjMeshes(g_AssetManager, "tree/", "objSignal.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+    Texture::Init(g_AssetManager, "default/white.png");
+
+//    GlUtil::LoadBinMeshes(g_AssetManager, "converted/simple_cube/", "cube.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadBinMeshes(g_AssetManager, "converted/cube/", "cube.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadBinMeshes(g_AssetManager, "converted/box/", "box_stack.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+    GlUtil::LoadBinMeshes(g_AssetManager, "converted/tank/", "old_tank.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/texcube/", "test.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/simple_cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/tank/", "old_tank.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadObjMeshes(g_AssetManager, "original/tree/", "objSignal.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 
     for(int i = 0; i < g_Renderer->mNumMeshes; i++)
     {
-        float scale = 1.00f;
+        float scale = 0.01f;
         g_Renderer->mMeshes[i].mModel = glm::scale(g_Renderer->mMeshes[i].mModel, glm::vec3(scale, scale, scale));
     }
 }

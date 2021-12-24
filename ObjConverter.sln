@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjConverter", "ObjConverter\ObjConverter.csproj", "{D368A5B1-271A-46BF-87D2-F4B9E94E3EF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CjClutter.ObjLoader.Loader", "CjClutter.ObjLoader.Loader\CjClutter.ObjLoader.Loader.csproj", "{DC8418AF-4765-4D5D-AB7E-C8755DC118F2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D368A5B1-271A-46BF-87D2-F4B9E94E3EF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D368A5B1-271A-46BF-87D2-F4B9E94E3EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D368A5B1-271A-46BF-87D2-F4B9E94E3EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D368A5B1-271A-46BF-87D2-F4B9E94E3EF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC8418AF-4765-4D5D-AB7E-C8755DC118F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC8418AF-4765-4D5D-AB7E-C8755DC118F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC8418AF-4765-4D5D-AB7E-C8755DC118F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC8418AF-4765-4D5D-AB7E-C8755DC118F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8FE97C3-9154-4938-B8E4-C06FFAC38FBD}
+	EndGlobalSection
+EndGlobal

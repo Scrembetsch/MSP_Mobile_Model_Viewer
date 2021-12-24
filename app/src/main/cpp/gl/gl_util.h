@@ -20,6 +20,7 @@ namespace GlUtil {
     GLuint LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath);
 
     void LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
+    void LoadBinMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
 };
 
 #endif //MSP_MOBILE_MODEL_VIEWER_GL_UTIL_H

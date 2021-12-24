@@ -1,6 +1,9 @@
 #include "gl_util.h"
 
-#include "obj_loader_.h"
+#include "obj_loader.h"
+#include "bin_loader.h"
+
+#include "../primitive/texture.h"
 
 #include "../util.h"
 
@@ -104,6 +107,12 @@ GLuint GlUtil::CreateProgram(const char* vtxSrc, const char* fragSrc) {
 
 GLuint GlUtil::LoadTexture(AAssetManager* assetManager, const std::string& filepath)
 {
+    if(Util::EndsWith(filepath, ".pkm"))
+    {
+        return LoadPkmTexture(assetManager, filepath);
+    }
+
+
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -188,16 +197,67 @@ void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path,
             vertices[j].Normal[2] = loadedVertices[loadedIndices[j]].Normal.Z;
         }
         meshes[i].Init(vertices, loadedIndices.size());
+
+        LOGE("GL_UTIL", "-------");
+        for(int j = 0; j < loadedIndices.size(); j++)
+        {
+            LOGE("GL_UTIL", "V(X:%g,Y:%g,Z:%g), T(X:%g,Y:%g), N(X:%g,Y:%g,Z:%g)", vertices[j].Position[0], vertices[j].Position[1], vertices[j].Position[2], vertices[j].TexCoord[0], vertices[j].TexCoord[1], vertices[j].Normal[0], vertices[j].Normal[1], vertices[j].Normal[2]);
+        }
+
         meshes[i].mMaterial.Diffuse[0] = loader.LoadedMeshes[i].MeshMaterial.Kd.X;
         meshes[i].mMaterial.Diffuse[1] = loader.LoadedMeshes[i].MeshMaterial.Kd.Y;
         meshes[i].mMaterial.Diffuse[2] = loader.LoadedMeshes[i].MeshMaterial.Kd.Z;
 
         if(!loader.LoadedMeshes[i].MeshMaterial.map_Kd.empty())
         {
-//            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
-            meshes[i].mMaterial.Texture.mTex = LoadPkmTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
+            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.LoadedMeshes[i].MeshMaterial.map_Kd);
+        }
+        else
+        {
+            meshes[i].mMaterial.Texture.mTex = Texture::sWhite;
         }
 
+        delete[] vertices;
+    }
+}
+
+void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
+{
+    binl::Loader loader;
+    loader.LoadFile(assetManager, path + filename);
+
+    meshes = new Mesh[loader.mNumMeshes];
+    numMeshes = loader.mNumMeshes;
+
+    for(int i = 0; i < loader.mNumMeshes; i++) {
+        Vertex *vertices = new Vertex[loader.mMeshes[i].numIndices];
+        for (int j = 0; j < loader.mMeshes[i].numIndices; j++) {
+            vertices[j].Position[0] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].X;
+            vertices[j].Position[1] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].Y;
+            vertices[j].Position[2] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].Z;
+            vertices[j].TexCoord[0] = loader.mTexCoords[loader.mMeshes[i].texIndex[j]].X;
+            vertices[j].TexCoord[1] = loader.mTexCoords[loader.mMeshes[i].texIndex[j]].Y;
+            vertices[j].Normal[0] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].X;
+            vertices[j].Normal[1] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].Y;
+            vertices[j].Normal[2] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].Z;
+        }
+        meshes[i].Init(vertices, loader.mMeshes[i].numIndices);
+
+        LOGE("GL_UTIL", "-------");
+        for(int j = 0; j < loader.mMeshes[i].numIndices; j++)
+        {
+            LOGE("GL_UTIL", "V(X:%g,Y:%g,Z:%g), T(X:%g,Y:%g), N(X:%g,Y:%g,Z:%g)", vertices[j].Position[0], vertices[j].Position[1], vertices[j].Position[2], vertices[j].TexCoord[0], vertices[j].TexCoord[1], vertices[j].Normal[0], vertices[j].Normal[1], vertices[j].Normal[2]);
+        }
+
+        meshes[i].mMaterial.Diffuse[0] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.X;
+        meshes[i].mMaterial.Diffuse[1] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Y;
+        meshes[i].mMaterial.Diffuse[2] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Z;
+
+        if(!loader.mMaterials[loader.mMeshes[i].materialIndex].map_Kd.empty()) {
+            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.mMaterials[loader.mMeshes[i].materialIndex].map_Kd);
+        }else{
+            meshes[i].mMaterial.Texture.mTex = Texture::sWhite;
+        }
         delete[] vertices;
     }
 }

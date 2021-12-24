@@ -39,9 +39,11 @@ void Mesh::Init(const Vertex* model, unsigned int numVertices)
     glBindVertexArray(mVao);
     glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetPositionOffset());
     glEnableVertexAttribArray(Vertex::Attribute::POSITION);
+
     glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetTexCoordOffset());
     glEnableVertexAttribArray(Vertex::Attribute::TEXCOORD);
-    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetNormalOffset());
+
+    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_TRUE, Vertex::GetVertexSize(), Vertex::GetNormalOffset());
     glEnableVertexAttribArray(Vertex::Attribute::NORMAL);
 }
 
