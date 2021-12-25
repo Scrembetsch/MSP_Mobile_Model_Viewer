@@ -152,6 +152,10 @@ GLuint GlUtil::LoadTexture(AAssetManager* assetManager, const std::string& filep
     return textureID;
 }
 
+uint16_t GlUtil::GetShortBE(char* data) {
+    return data[0] << 8 | data[1];
+}
+
 GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath)
 {
     unsigned int textureID;
@@ -159,10 +163,18 @@ GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& fi
 
     AAsset * file = AAssetManager_open (assetManager, filepath.c_str(), AASSET_MODE_UNKNOWN);
     off_t assetLength = AAsset_getLength (file);
-    unsigned char * fileData = (unsigned char *) AAsset_getBuffer (file);
+    char * fileData = (char *) AAsset_getBuffer (file);
+
+    uint16_t extendedWidth = GetShortBE(fileData + 0x8);
+    uint16_t extendedHeight = GetShortBE(fileData + 0xA);
+    //uint16_t originalWidth = GetShortBE(fileData + 0xC);
+    //uint16_t originalHeight = GetShortBE(fileData + 0xE);
+
+    uint32_t compressedDataSize = (extendedWidth / 4) * (extendedHeight / 4) * 8;
+    char* compressedData = fileData + 0x10;
 
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, 2048, 2048, 0, ceil(2048/4) * ceil(2048/4) * 8 , fileData);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, extendedWidth, extendedHeight, 0, compressedDataSize, compressedData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -197,12 +209,6 @@ void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path,
             vertices[j].Normal[2] = loadedVertices[loadedIndices[j]].Normal.Z;
         }
         meshes[i].Init(vertices, loadedIndices.size());
-
-        LOGE("GL_UTIL", "-------");
-        for(int j = 0; j < loadedIndices.size(); j++)
-        {
-            LOGE("GL_UTIL", "V(X:%g,Y:%g,Z:%g), T(X:%g,Y:%g), N(X:%g,Y:%g,Z:%g)", vertices[j].Position[0], vertices[j].Position[1], vertices[j].Position[2], vertices[j].TexCoord[0], vertices[j].TexCoord[1], vertices[j].Normal[0], vertices[j].Normal[1], vertices[j].Normal[2]);
-        }
 
         meshes[i].mMaterial.Diffuse[0] = loader.LoadedMeshes[i].MeshMaterial.Kd.X;
         meshes[i].mMaterial.Diffuse[1] = loader.LoadedMeshes[i].MeshMaterial.Kd.Y;
@@ -242,12 +248,6 @@ void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path,
             vertices[j].Normal[2] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].Z;
         }
         meshes[i].Init(vertices, loader.mMeshes[i].numIndices);
-
-        LOGE("GL_UTIL", "-------");
-        for(int j = 0; j < loader.mMeshes[i].numIndices; j++)
-        {
-            LOGE("GL_UTIL", "V(X:%g,Y:%g,Z:%g), T(X:%g,Y:%g), N(X:%g,Y:%g,Z:%g)", vertices[j].Position[0], vertices[j].Position[1], vertices[j].Position[2], vertices[j].TexCoord[0], vertices[j].TexCoord[1], vertices[j].Normal[0], vertices[j].Normal[1], vertices[j].Normal[2]);
-        }
 
         meshes[i].mMaterial.Diffuse[0] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.X;
         meshes[i].mMaterial.Diffuse[1] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Y;

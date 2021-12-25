@@ -8,14 +8,13 @@
 #include <android/asset_manager.h>
 
 namespace GlUtil {
-    struct EtcHeader{
-
-    };
-
     bool CheckGlError(const char* funcName);
     void PrintGlString(const char* name, GLenum s);
     GLuint CreateShader(GLenum shaderType, const char* src);
     GLuint CreateProgram(const char* vtxSrc, const char* fragSrc);
+
+    uint16_t GetShortBE(char* data);
+
     GLuint LoadTexture(AAssetManager* assetManager, const std::string& filepath);
     GLuint LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath);
 
