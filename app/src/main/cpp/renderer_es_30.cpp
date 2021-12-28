@@ -2,6 +2,7 @@
 #include "gl/gl_util.h"
 #include "glm/glm.hpp"
 #include "util.h"
+#include "timer.h"
 
 static const char VERTEX_SHADER[] =
         "#version 300 es\n"
@@ -41,6 +42,7 @@ RendererES30::RendererES30()
         : Renderer()
         , mEglContext(eglGetCurrentContext())
         , mProgram(0)
+        , mCurrentMeasurment(0)
 {
 }
 
@@ -67,8 +69,27 @@ void RendererES30::Draw() {
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uView"), 1, GL_FALSE, &mViewMat[0][0]);
 //    mMesh.Draw(mProgram);
 
-    for(int i = 0; i < mNumMeshes; i++)
-    {
-        mMeshes[i].Draw(mProgram);
+    Timer::GetInstance()->StartRecord("Render");
+    for(int repeats = 0; repeats < 5; repeats++){
+        for(int i = 0; i < mNumMeshes; i++)
+        {
+            mMeshes[i].Draw(mProgram);
+        }
     }
+
+    Timer::GetInstance()->StopRecord("Render");
+    mMeasurments.push_back(Timer::GetInstance()->GetRecord("Render"));
+    mCurrentMeasurment++;
+    if(mCurrentMeasurment > 60){
+        float all = 0.0f;
+        for(int i = 0; i < mMeasurments.size(); i++)
+        {
+            all += mMeasurments[i];
+        }
+        LOGE("TIMER", "Mean render time (60 frames): %g ms", all / mCurrentMeasurment);
+
+        mMeasurments.clear();
+        mCurrentMeasurment = 0;
+    }
+    Timer::Clear();
 }

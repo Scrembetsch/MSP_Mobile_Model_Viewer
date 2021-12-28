@@ -15,7 +15,8 @@ add_library(msp_mobile_model_viewer SHARED
         renderer.cpp
         renderer_es_30.cpp
         model_viewer_jni_bridge.cpp
-        util.cpp)
+        util.cpp
+        timer.cpp)
 
 # Include libraries needed for gles3jni lib
 target_link_libraries(msp_mobile_model_viewer

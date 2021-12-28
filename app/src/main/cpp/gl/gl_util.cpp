@@ -6,6 +6,7 @@
 #include "../primitive/texture.h"
 
 #include "../util.h"
+#include "../timer.h"
 
 #include <cmath>
 #include <malloc.h>
@@ -200,6 +201,8 @@ void GlUtil::LoadMeshes(AAssetManager* assetManager, const std::string& path, co
 
 void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
 {
+    Timer::GetInstance()->StartRecord("LoadObj");
+
     objl::Loader loader;
     loader.LoadFile(assetManager, path + filename);
 
@@ -238,10 +241,14 @@ void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path,
 
         delete[] vertices;
     }
+    Timer::GetInstance()->StopRecord("LoadObj");
+    LOGE("TIMER", "%s", Timer::GetInstance()->ToString().c_str());
 }
 
 void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
 {
+    Timer::GetInstance()->StartRecord("LoadBin");
+
     binl::Loader loader;
     loader.LoadFile(assetManager, path + filename);
 
@@ -282,4 +289,6 @@ void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path,
         }
         delete[] vertices;
     }
+    Timer::GetInstance()->StopRecord("LoadBin");
+    LOGE("TIMER", "%s", Timer::GetInstance()->ToString().c_str());
 }

@@ -30,10 +30,10 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
 
     Texture::Init(g_AssetManager, "default/white.png");
 
-//    GlUtil::LoadMeshes(g_AssetManager, "models/texcube/", "test.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+    GlUtil::LoadMeshes(g_AssetManager, "models/texcube/", "test.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadMeshes(g_AssetManager, "models/cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadMeshes(g_AssetManager, "models/simple_cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-    GlUtil::LoadMeshes(g_AssetManager, "models/tank/", "old_tank.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
+//    GlUtil::LoadMeshes(g_AssetManager, "models/tank/", "old_tank.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadMeshes(g_AssetManager, "models/box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 //    GlUtil::LoadMeshes(g_AssetManager, "models/tree/", "objSignal.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
 
