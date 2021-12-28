@@ -84,6 +84,7 @@ namespace App
 
                 // Data: Num Meshes
                 bw.Write(objResult.Groups.Count);
+                int vertices = 0;
                 foreach(var group in objResult.Groups)
                 {
                     int index = objResult.Materials.IndexOf(group.Material);
@@ -91,6 +92,7 @@ namespace App
                     bw.Write(objResult.Materials.IndexOf(group.Material));
 
                     IList<Face> faces = GroupAndTriangulateFaces(group.Faces, objResult.Vertices);
+                    vertices += faces.Count * 3;
                     RemoveDuplicateVerticesAndIndexList(faces, out IList<FaceVertex> uniqueVertices, out IList<uint> indices);
 
                     // Data: Num Unique Vertices
@@ -103,6 +105,7 @@ namespace App
                 bw.Flush();
                 fileStream.Close();
 
+                Console.WriteLine($"Vertices: {vertices}");
                 Console.WriteLine($"Finished after: {(DateTime.Now - start).Milliseconds} ms");
             }
             catch (Exception ex)
