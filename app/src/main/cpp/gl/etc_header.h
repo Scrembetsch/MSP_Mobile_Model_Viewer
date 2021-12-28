@@ -16,7 +16,7 @@ private:
     unsigned char heightLSB;
 public:
     EtcHeader();
-    EtcHeader(unsigned char *data);
+    EtcHeader(char *data);
 
     unsigned short GetWidth(void);
     unsigned short GetHeight(void);

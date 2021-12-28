@@ -16,8 +16,8 @@ private:
     const EGLContext mEglContext;
     GLuint mProgram;
 
-    std::vector<float> mMeasurments;
-    int mCurrentMeasurment;
+    std::vector<float> mRenderTimes;
+    int mTimerCounter;
 };
 
 #endif //MSP_MOBILE_MODEL_VIEWER_RENDERER_ES_30_H

@@ -2,6 +2,7 @@
 
 #include "obj_loader.h"
 #include "bin_loader.h"
+#include "etc_header.h"
 
 #include "../primitive/texture.h"
 
@@ -153,10 +154,6 @@ GLuint GlUtil::LoadTexture(AAssetManager* assetManager, const std::string& filep
     return textureID;
 }
 
-uint16_t GlUtil::GetShortBE(char* data) {
-    return data[0] << 8 | data[1];
-}
-
 GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath)
 {
     unsigned int textureID;
@@ -165,14 +162,10 @@ GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& fi
     AAsset * file = AAssetManager_open (assetManager, filepath.c_str(), AASSET_MODE_UNKNOWN);
     char * fileData = (char *) AAsset_getBuffer (file);
 
-    uint16_t extendedWidth = GetShortBE(fileData + 0x8);
-    uint16_t extendedHeight = GetShortBE(fileData + 0xA);
-
-    uint32_t compressedDataSize = (extendedWidth / 4) * (extendedHeight / 4) * 8;
-    char* compressedData = fileData + 0x10;
+    EtcHeader header(fileData);
 
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, extendedWidth, extendedHeight, 0, compressedDataSize, compressedData);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, header.GetWidth(), header.GetHeight(), 0, header.GetSize(GL_COMPRESSED_RGB8_ETC2), fileData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -252,38 +245,38 @@ void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path,
     binl::Loader loader;
     loader.LoadFile(assetManager, path + filename);
 
-    meshes = new Mesh[loader.mNumMeshes];
-    numMeshes = loader.mNumMeshes;
+    meshes = new Mesh[loader.NumMeshes];
+    numMeshes = loader.NumMeshes;
 
-    for(int i = 0; i < loader.mNumMeshes; i++) {
-        Vertex *vertices = new Vertex[loader.mMeshes[i].numVertices];
-        for (int j = 0; j < loader.mMeshes[i].numVertices; j++) {
-//            vertices[j].Position[0] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].X;
-//            vertices[j].Position[1] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].Y;
-//            vertices[j].Position[2] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].Z;
-//            vertices[j].TexCoord[0] = loader.mTexCoords[loader.mMeshes[i].vertices[j].TexCoordIndex].X;
-//            vertices[j].TexCoord[1] = loader.mTexCoords[loader.mMeshes[i].vertices[j].TexCoordIndex].Y;
-//            vertices[j].Normal[0] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].X;
-//            vertices[j].Normal[1] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].Y;
-//            vertices[j].Normal[2] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].Z;
+    for(int i = 0; i < loader.NumMeshes; i++) {
+        Vertex *vertices = new Vertex[loader.Meshes[i].NumVertices];
+        for (int j = 0; j < loader.Meshes[i].NumVertices; j++) {
+//            Vertices[j].Position[0] = loader.mVertPos[loader.Meshes[i].Vertices[j].PositionIndex].X;
+//            Vertices[j].Position[1] = loader.mVertPos[loader.Meshes[i].Vertices[j].PositionIndex].Y;
+//            Vertices[j].Position[2] = loader.mVertPos[loader.Meshes[i].Vertices[j].PositionIndex].Z;
+//            Vertices[j].TexCoord[0] = loader.mTexCoords[loader.Meshes[i].Vertices[j].TexCoordIndex].X;
+//            Vertices[j].TexCoord[1] = loader.mTexCoords[loader.Meshes[i].Vertices[j].TexCoordIndex].Y;
+//            Vertices[j].Normal[0] = loader.mNormals[loader.Meshes[i].Vertices[j].NormalIndex].X;
+//            Vertices[j].Normal[1] = loader.mNormals[loader.Meshes[i].Vertices[j].NormalIndex].Y;
+//            Vertices[j].Normal[2] = loader.mNormals[loader.Meshes[i].Vertices[j].NormalIndex].Z;
 
-            vertices[j].Position[0] = loader.mMeshes[i].realVertices[j].Position.X;
-            vertices[j].Position[1] = loader.mMeshes[i].realVertices[j].Position.Y;
-            vertices[j].Position[2] = loader.mMeshes[i].realVertices[j].Position.Z;
-            vertices[j].TexCoord[0] = loader.mMeshes[i].realVertices[j].TextureCoordinate.X;
-            vertices[j].TexCoord[1] = loader.mMeshes[i].realVertices[j].TextureCoordinate.Y;
-            vertices[j].Normal[0] = loader.mMeshes[i].realVertices[j].Normal.X;
-            vertices[j].Normal[1] = loader.mMeshes[i].realVertices[j].Normal.Y;
-            vertices[j].Normal[2] = loader.mMeshes[i].realVertices[j].Normal.Z;
+            vertices[j].Position[0] = loader.Meshes[i].Vertices[j].Position.X;
+            vertices[j].Position[1] = loader.Meshes[i].Vertices[j].Position.Y;
+            vertices[j].Position[2] = loader.Meshes[i].Vertices[j].Position.Z;
+            vertices[j].TexCoord[0] = loader.Meshes[i].Vertices[j].TextureCoordinate.X;
+            vertices[j].TexCoord[1] = loader.Meshes[i].Vertices[j].TextureCoordinate.Y;
+            vertices[j].Normal[0] = loader.Meshes[i].Vertices[j].Normal.X;
+            vertices[j].Normal[1] = loader.Meshes[i].Vertices[j].Normal.Y;
+            vertices[j].Normal[2] = loader.Meshes[i].Vertices[j].Normal.Z;
         }
-        meshes[i].Init(vertices, loader.mMeshes[i].numVertices, loader.mMeshes[i].indices, loader.mMeshes[i].numIndices);
+        meshes[i].Init(vertices, loader.Meshes[i].NumVertices, loader.Meshes[i].Indices, loader.Meshes[i].NumIndices);
 
-        meshes[i].mMaterial.Diffuse[0] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.X;
-        meshes[i].mMaterial.Diffuse[1] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Y;
-        meshes[i].mMaterial.Diffuse[2] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Z;
+        meshes[i].mMaterial.Diffuse[0] = loader.Materials[loader.Meshes[i].MaterialIndex].Kd.X;
+        meshes[i].mMaterial.Diffuse[1] = loader.Materials[loader.Meshes[i].MaterialIndex].Kd.Y;
+        meshes[i].mMaterial.Diffuse[2] = loader.Materials[loader.Meshes[i].MaterialIndex].Kd.Z;
 
-        if(!loader.mMaterials[loader.mMeshes[i].materialIndex].map_Kd.empty()) {
-            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.mMaterials[loader.mMeshes[i].materialIndex].map_Kd);
+        if(!loader.Materials[loader.Meshes[i].MaterialIndex].map_Kd.empty()) {
+            meshes[i].mMaterial.Texture.mTex = LoadTexture(assetManager, path + loader.Materials[loader.Meshes[i].MaterialIndex].map_Kd);
         }else{
             meshes[i].mMaterial.Texture.mTex = Texture::sWhite;
         }

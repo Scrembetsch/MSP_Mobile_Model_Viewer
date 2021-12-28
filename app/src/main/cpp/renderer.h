@@ -14,8 +14,8 @@ public:
     void SetScale(float scale);
     void MoveCamera(float x, float y);
 
-    Mesh* mMeshes;
-    unsigned int mNumMeshes;
+    Mesh* Meshes;
+    unsigned int NumMeshes;
 
 protected:
     Renderer();

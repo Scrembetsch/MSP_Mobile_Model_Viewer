@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include "../glm/ext.hpp"
 
 Mesh::Mesh()
 : mModel(1.0f)
@@ -17,6 +18,18 @@ Mesh::Mesh(const Vertex* model, unsigned int numVertices)
 
 Mesh::~Mesh()
 {
+    Cleanup(true);
+}
+
+void Mesh::Cleanup(bool destructorCleanup)
+{
+    if(!destructorCleanup)
+    {
+        mModel = glm::mat4(1.0f);
+        mNumIndices = 0;
+        mNumVertices = 0;
+    }
+
     if(mEbo != 0)
     {
         glDeleteBuffers(1, &mEbo);
@@ -33,27 +46,31 @@ Mesh::~Mesh()
 
 void Mesh::Init(const Vertex* model, unsigned int numVertices)
 {
+    Cleanup(false);
     mNumVertices = numVertices;
 
     glGenVertexArrays(1, &mVao);
     glGenBuffers(1, &mVbo);
 
+    glBindVertexArray(mVao);
     glBindBuffer(GL_ARRAY_BUFFER, mVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(*model) * numVertices, model, GL_STATIC_DRAW);
 
-    glBindVertexArray(mVao);
-    glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetPositionOffset());
     glEnableVertexAttribArray(Vertex::Attribute::POSITION);
+    glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
 
-    glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetTexCoordOffset());
     glEnableVertexAttribArray(Vertex::Attribute::TEXCOORD);
+    glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoord));
 
-    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_TRUE, Vertex::GetVertexSize(), Vertex::GetNormalOffset());
     glEnableVertexAttribArray(Vertex::Attribute::NORMAL);
+    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
+    glBindVertexArray(0);
 }
 
 void Mesh::Init(const Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)
 {
+    Cleanup(false);
     mNumVertices = numVertices;
     mNumIndices = numIndices;
 
@@ -70,13 +87,15 @@ void Mesh::Init(const Vertex* vertices, unsigned int numVertices, unsigned int* 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numIndices, indices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(Vertex::Attribute::POSITION);
-    glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetPositionOffset());
+    glVertexAttribPointer(Vertex::Attribute::POSITION, Vertex::GetPositionSize(), GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
 
     glEnableVertexAttribArray(Vertex::Attribute::TEXCOORD);
-    glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, Vertex::GetVertexSize(), Vertex::GetTexCoordOffset());
+    glVertexAttribPointer(Vertex::Attribute::TEXCOORD, Vertex::GetTexCoordSize(), GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoord));
 
     glEnableVertexAttribArray(Vertex::Attribute::NORMAL);
-    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_TRUE, Vertex::GetVertexSize(), Vertex::GetNormalOffset());
+    glVertexAttribPointer(Vertex::Attribute::NORMAL, Vertex::GetNormalSize(), GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
+    glBindVertexArray(0);
 }
 
 void Mesh::Draw(GLuint shader) const
@@ -92,4 +111,5 @@ void Mesh::Draw(GLuint shader) const
     {
         glDrawElements(GL_TRIANGLES, mNumIndices, GL_UNSIGNED_INT, 0);
     }
+    glBindVertexArray(0);
 }

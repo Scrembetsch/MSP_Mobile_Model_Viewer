@@ -18,6 +18,8 @@ public:
     Material mMaterial;
 
 protected:
+    void Cleanup(bool destructorCleanup = false);
+
     GLuint mVao;
     GLuint mVbo;
     GLuint mEbo;

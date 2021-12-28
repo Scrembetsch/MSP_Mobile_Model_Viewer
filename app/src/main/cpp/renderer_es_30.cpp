@@ -42,7 +42,7 @@ RendererES30::RendererES30()
         : Renderer()
         , mEglContext(eglGetCurrentContext())
         , mProgram(0)
-        , mCurrentMeasurment(0)
+        , mTimerCounter(0)
 {
 }
 
@@ -67,29 +67,31 @@ void RendererES30::Draw() {
     glUseProgram(mProgram);
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uProjection"), 1, GL_FALSE, &mProjectionMat[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(mProgram, "uView"), 1, GL_FALSE, &mViewMat[0][0]);
-//    mMesh.Draw(mProgram);
 
     Timer::GetInstance()->StartRecord("Render");
-    for(int repeats = 0; repeats < 5; repeats++){
-        for(int i = 0; i < mNumMeshes; i++)
+
+    // Repeat rendering multiple times (only one draw call doesn't show any time differences)
+    for(int repeats = 0; repeats < 10; repeats++){
+        for(int i = 0; i < NumMeshes; i++)
         {
-            mMeshes[i].Draw(mProgram);
+            Meshes[i].Draw(mProgram);
         }
     }
 
     Timer::GetInstance()->StopRecord("Render");
-    mMeasurments.push_back(Timer::GetInstance()->GetRecord("Render"));
-    mCurrentMeasurment++;
-    if(mCurrentMeasurment > 60){
-        float all = 0.0f;
-        for(int i = 0; i < mMeasurments.size(); i++)
-        {
-            all += mMeasurments[i];
-        }
-        LOGE("TIMER", "Mean render time (60 frames): %g ms", all / mCurrentMeasurment);
-
-        mMeasurments.clear();
-        mCurrentMeasurment = 0;
-    }
+    mRenderTimes.push_back(Timer::GetInstance()->GetRecord("Render"));
+    mTimerCounter++;
     Timer::Clear();
+
+    if(mTimerCounter >= 60){
+        float allRenderTimes = 0.0f;
+        for(float renderTime : mRenderTimes)
+        {
+            allRenderTimes += renderTime;
+        }
+        LOGE("TIMER", "Mean render time (over 60 frames): %g ms", allRenderTimes / mTimerCounter);
+
+        mRenderTimes.clear();
+        mTimerCounter = 0;
+    }
 }

@@ -30,18 +30,12 @@ extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_M
 
     Texture::Init(g_AssetManager, "default/white.png");
 
-    GlUtil::LoadMeshes(g_AssetManager, "models/texcube/", "test.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadMeshes(g_AssetManager, "models/cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadMeshes(g_AssetManager, "models/simple_cube/", "cube.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadMeshes(g_AssetManager, "models/tank/", "old_tank.leb", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadMeshes(g_AssetManager, "models/box/", "box_stack.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-//    GlUtil::LoadMeshes(g_AssetManager, "models/tree/", "objSignal.obj", g_Renderer->mMeshes, g_Renderer->mNumMeshes);
-
-    for(int i = 0; i < g_Renderer->mNumMeshes; i++)
-    {
-        float scale = 1.01f;
-        g_Renderer->mMeshes[i].mModel = glm::scale(g_Renderer->mMeshes[i].mModel, glm::vec3(scale, scale, scale));
-    }
+//    GlUtil::LoadMeshes(g_AssetManager, "models/texcube/", "test.leb", g_Renderer->Meshes, g_Renderer->NumMeshes);
+//    GlUtil::LoadMeshes(g_AssetManager, "models/cube/", "cube.obj", g_Renderer->Meshes, g_Renderer->NumMeshes);
+//    GlUtil::LoadMeshes(g_AssetManager, "models/simple_cube/", "cube.obj", g_Renderer->Meshes, g_Renderer->NumMeshes);
+    GlUtil::LoadMeshes(g_AssetManager, "models/tank/", "old_tank.leb", g_Renderer->Meshes, g_Renderer->NumMeshes);
+//    GlUtil::LoadMeshes(g_AssetManager, "models/box/", "box_stack.obj", g_Renderer->Meshes, g_Renderer->NumMeshes);
+//    GlUtil::LoadMeshes(g_AssetManager, "models/tree/", "objSignal.obj", g_Renderer->Meshes, g_Renderer->NumMeshes);
 }
 
 extern "C" JNIEXPORT void JNICALL Java_at_tributsch_msp_1mobile_1model_1viewer_ModelViewerJniBridge_Resize(JNIEnv* env, jclass obj, jint width, jint height)

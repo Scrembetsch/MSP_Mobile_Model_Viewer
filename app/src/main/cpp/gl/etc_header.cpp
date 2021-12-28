@@ -3,7 +3,7 @@
 EtcHeader::EtcHeader()
 {}
 
-EtcHeader::EtcHeader(unsigned char *data)
+EtcHeader::EtcHeader(char *data)
 {
     paddedWidthMSB  = data[8];
     paddedWidthLSB  = data[9];

@@ -18,11 +18,6 @@ public:
     static GLint GetPositionSize();
     static GLint GetTexCoordSize();
     static GLint GetNormalSize();
-    static GLint GetVertexSize();
-
-    static void* GetPositionOffset();
-    static void* GetTexCoordOffset();
-    static void* GetNormalOffset();
 
     GLfloat Position[3];
     GLfloat TexCoord[2];

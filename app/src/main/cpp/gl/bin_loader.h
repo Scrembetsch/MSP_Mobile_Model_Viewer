@@ -125,13 +125,6 @@ namespace binl
         Vector2 TextureCoordinate;
     };
 
-    struct IndexedVertex
-    {
-        int PositionIndex;
-        int NormalIndex;
-        int TexCoordIndex;
-    };
-
     struct Material
     {
         Material()
@@ -180,18 +173,15 @@ namespace binl
     {
         ~Mesh()
         {
-            delete[] vertices;
-            delete[] indices;
-            delete[] realVertices;
+            delete[] Indices;
+            delete[] Vertices;
         }
 
-        int materialIndex;
-        int numVertices;
-        IndexedVertex* vertices;
-        Vertex* realVertices;
-
-        int numIndices;
-        unsigned int* indices;
+        int MaterialIndex;
+        int NumVertices;
+        int NumIndices;
+        Vertex* Vertices;
+        unsigned int* Indices;
     };
 
     class Loader
@@ -204,29 +194,17 @@ namespace binl
 
         void Cleanup()
         {
-            delete[] mMeshes;
-            delete[] mVertPos;
-            delete[] mNormals;
-            delete[] mTexCoords;
-            delete[] mMaterials;
+            delete[] Meshes;
+            delete[] Materials;
 
-            mNumMeshes = 0;
-            mNumVertexPositions = 0;
-            mNumNormals = 0;
-            mNumTexCoords = 0;
-            mNumMaterials = 0;
+            NumMeshes = 0;
+            NumMaterials = 0;
         }
 
-        Mesh* mMeshes = nullptr;
-        int mNumMeshes = 0;
-        Vector3* mVertPos = nullptr;
-        int mNumVertexPositions = 0;
-        Vector3* mNormals = nullptr;
-        int mNumNormals = 0;
-        Vector2* mTexCoords = nullptr;
-        int mNumTexCoords = 0;
-        Material* mMaterials = nullptr;
-        int mNumMaterials = 0;
+        Mesh* Meshes = nullptr;
+        int NumMeshes = 0;
+        Material* Materials = nullptr;
+        int NumMaterials = 0;
 
         template<class T>
         T Read(char* content, int& currentPos)
@@ -310,90 +288,45 @@ namespace binl
 
             int currentPos = 0;
 
-            // Data: Num Vertices
-//            mNumVertexPositions = Read<int>(fileContent, currentPos);
-//            mVertPos = new Vector3[mNumVertexPositions];
-//            // Data: Vertices
-//            for(int i = 0; i < mNumVertexPositions; i++)
-//            {
-//                mVertPos[i] = Read<Vector3>(fileContent, currentPos);
-//            }
-//
-//            // Data: Num TexCoords
-//            mNumTexCoords = Read<int>(fileContent, currentPos);
-//            mTexCoords = new Vector2[mNumTexCoords];
-//            // Data: TexCoords
-//            for(int i = 0; i < mNumTexCoords; i++)
-//            {
-//                mTexCoords[i] = Read<Vector2>(fileContent, currentPos);
-//            }
-//
-//            // Data: Num Normals
-//            mNumNormals = Read<int>(fileContent, currentPos);
-//            mNormals = new Vector3[mNumNormals];
-//            // Data: Normals
-//            for(int i = 0; i < mNumNormals; i++)
-//            {
-//                mNormals[i] = Read<Vector3>(fileContent, currentPos);
-//            }
-
             // Data: Num Materials
-            mNumMaterials = Read<int>(fileContent, currentPos);
-            mMaterials = new Material[mNumMaterials];
+            NumMaterials = Read<int>(fileContent, currentPos);
+            Materials = new Material[NumMaterials];
             // Data: Materials
-            for(int i = 0; i < mNumMaterials; i++)
+            for(int i = 0; i < NumMaterials; i++)
             {
-                mMaterials[i] = Read<Material>(fileContent, currentPos);
+                Materials[i] = Read<Material>(fileContent, currentPos);
             }
 
             // Data: Num Meshes
-            mNumMeshes = Read<int>(fileContent, currentPos);
-            mMeshes = new Mesh[mNumMeshes];
-            for(int i = 0; i < mNumMeshes; i++)
+            NumMeshes = Read<int>(fileContent, currentPos);
+            Meshes = new Mesh[NumMeshes];
+            for(int i = 0; i < NumMeshes; i++)
             {
                 // Data: Mesh Material Index
-                mMeshes[i].materialIndex = Read<int>(fileContent, currentPos);
+                Meshes[i].MaterialIndex = Read<int>(fileContent, currentPos);
 
                 // Data: Num Unique Vertices
-                mMeshes[i].numVertices = Read<int>(fileContent, currentPos);
-                mMeshes[i].vertices = new IndexedVertex[mMeshes[i].numVertices];
-                mMeshes[i].realVertices = new Vertex[mMeshes[i].numVertices];
+                Meshes[i].NumVertices = Read<int>(fileContent, currentPos);
+                Meshes[i].Vertices = new Vertex[Meshes[i].NumVertices];
                 // Data: Unique Vertices
-                for(int j = 0; j < mMeshes[i].numVertices; j++)
+                for(int j = 0; j < Meshes[i].NumVertices; j++)
                 {
-                    mMeshes[i].realVertices[j].Position = Read<Vector3>(fileContent, currentPos);
-                    mMeshes[i].realVertices[j].TextureCoordinate = Read<Vector2>(fileContent, currentPos);
-                    mMeshes[i].realVertices[j].Normal = Read<Vector3>(fileContent, currentPos);
-//                    mMeshes[i].vertices[j].PositionIndex = Read<int>(fileContent, currentPos);
-//                    mMeshes[i].vertices[j].TexCoordIndex = Read<int>(fileContent, currentPos);
-//                    mMeshes[i].vertices[j].NormalIndex = Read<int>(fileContent, currentPos);
+                    // Could also be done via indexing a list of previously added vertex data
+                    // No real speed difference, storage difference depends on how the objects is modeled
+                    // Some would prefer vertices that index the real data, others prefer it this way
+                    Meshes[i].Vertices[j].Position = Read<Vector3>(fileContent, currentPos);
+                    Meshes[i].Vertices[j].TextureCoordinate = Read<Vector2>(fileContent, currentPos);
+                    Meshes[i].Vertices[j].Normal = Read<Vector3>(fileContent, currentPos);
                 }
 
                 // Data: Num Vertex Indices
-                mMeshes[i].numIndices = Read<int>(fileContent, currentPos);
-                mMeshes[i].indices = new unsigned int[mMeshes[i].numIndices];
+                Meshes[i].NumIndices = Read<int>(fileContent, currentPos);
+                Meshes[i].Indices = new unsigned int[Meshes[i].NumIndices];
                 // Data: Vertex Indices
-                for(int j = 0; j < mMeshes[i].numIndices; j++)
+                for(int j = 0; j < Meshes[i].NumIndices; j++)
                 {
-                    mMeshes[i].indices[j] = Read<unsigned int>(fileContent, currentPos);
+                    Meshes[i].Indices[j] = Read<unsigned int>(fileContent, currentPos);
                 }
-
-                // Old parser
-                // Data: Num Face Vertices
-//                mMeshes[i].numIndices = Read<int>(fileContent, currentPos);
-//
-//                mMeshes[i].vertexIndex = new int[mMeshes[i].numIndices];
-//                mMeshes[i].texIndex = new int[mMeshes[i].numIndices];
-//                mMeshes[i].normalIndex = new int[mMeshes[i].numIndices];
-//                  // Data: Face Vertex Indices
-//                for(int j = 0; j < mMeshes[i].numIndices; j++)
-//                {
-//                    mMeshes[i].vertexIndex[j] = Read<int>(fileContent, currentPos);
-//                    mMeshes[i].texIndex[j] = Read<int>(fileContent, currentPos);
-//                    mMeshes[i].normalIndex[j] = Read<int>(fileContent, currentPos);
-//                }
-
-
             }
             delete[] fileContent;
             return true;

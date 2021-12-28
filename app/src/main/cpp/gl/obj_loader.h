@@ -490,7 +490,7 @@ namespace objl
 					{
 						std::cout
 							<< "\r- " << meshname
-							<< "\t| vertices > " << Positions.size()
+							<< "\t| Vertices > " << Positions.size()
 							<< "\t| texcoords > " << TCoords.size()
 							<< "\t| normals > " << Normals.size()
 							<< "\t| triangles > " << (Vertices.size() / 3)
@@ -590,10 +590,10 @@ namespace objl
 
 					Normals.push_back(vnor);
 				}
-				// Generate a Face (vertices & indices)
+				// Generate a Face (Vertices & Indices)
 				if (algorithm::firstToken(curline) == "f")
 				{
-					// Generate the vertices
+					// Generate the Vertices
 					std::vector<Vertex> vVerts;
 					GenVerticesFromRawOBJ(vVerts, Positions, TCoords, Normals, curline);
 
@@ -737,7 +737,7 @@ namespace objl
 		std::vector<Material> LoadedMaterials;
 
 	private:
-		// Generate vertices from a list of positions, 
+		// Generate Vertices from a list of positions,
 		//	tcoords, normals and a face line
 		void GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts,
 			const std::vector<Vector3>& iPositions,
@@ -848,7 +848,7 @@ namespace objl
 			}
 		}
 
-		// Triangulate a list of vertices into a face by printing
+		// Triangulate a list of Vertices into a face by printing
 		//	inducies corresponding with triangles within it
 		void VertexTriangluation(std::vector<unsigned int>& oIndices,
 			const std::vector<Vertex>& iVerts)
@@ -869,7 +869,7 @@ namespace objl
 				return;
 			}
 
-			// Create a list of vertices
+			// Create a list of Vertices
 			std::vector<Vertex> tVerts = iVerts;
 
 			while (true)
@@ -965,7 +965,7 @@ namespace objl
 					if (angle <= 0 && angle >= 180)
 						continue;
 
-					// If any vertices are within this triangle
+					// If any Vertices are within this triangle
 					bool inTri = false;
 					for (int j = 0; j < int(iVerts.size()); j++)
 					{
@@ -1011,7 +1011,7 @@ namespace objl
 				if (oIndices.size() == 0)
 					break;
 
-				// if no more vertices
+				// if no more Vertices
 				if (tVerts.size() == 0)
 					break;
 			}

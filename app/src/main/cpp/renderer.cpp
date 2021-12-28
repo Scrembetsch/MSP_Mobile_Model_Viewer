@@ -14,7 +14,7 @@ Renderer::Renderer()
 }
 
 Renderer::~Renderer() {
-    delete[] mMeshes;
+    delete[] Meshes;
 }
 
 void Renderer::Resize(int w, int h) {

@@ -72,23 +72,14 @@ namespace App
             try
             {
                 Directory.SetCurrentDirectory(path);
+                Console.WriteLine($"Parsing: " + objName);
+                DateTime start = DateTime.Now;
                 FileStream readStream = new FileStream(objName, FileMode.Open, FileAccess.Read);
                 LoadResult objResult = new ObjLoaderFactory().Create().Load(readStream);
                 string newFile = path + objName[0..^3] + "leb";
                 File.Delete(newFile);
                 FileStream fileStream = new FileStream(newFile, FileMode.OpenOrCreate, FileAccess.Write);
                 BinaryWriter bw = new BinaryWriter(fileStream);
-                // Data: Num Vertices
-                // Data: Vertices
-                //bw.Write(objResult.Vertices);
-                // Data: Num TexCoords
-                // Data: TexCoords
-                //bw.Write(objResult.Textures);
-                // Data: Num Normals
-                // Data:: Normals
-                //bw.Write(objResult.Normals);
-                // Data: Num Materials
-                // Data: Materials
                 bw.Write(objResult.Materials);
 
                 // Data: Num Meshes
@@ -98,24 +89,9 @@ namespace App
                     int index = objResult.Materials.IndexOf(group.Material);
                     // Data: Mesh Material Index
                     bw.Write(objResult.Materials.IndexOf(group.Material));
-                    // Old parser
-                    // Data: Num FaceVertices
-                    //bw.Write(faces.Count * 3);
-                    //foreach (var face in faces)
-                    //{
-                    //    // Data: Face Vertex Indices
-                    //    for(int i = 0; i < face.Count; i++)
-                    //    {
-                    //        bw.Write(face[i].VertexIndex - 1);
-                    //        bw.Write(face[i].TextureIndex - 1);
-                    //        bw.Write(face[i].NormalIndex - 1);
-                    //    }
-                    //}
 
                     IList<Face> faces = GroupAndTriangulateFaces(group.Faces, objResult.Vertices);
-                    IList<FaceVertex> uniqueVertices;
-                    IList<uint> indices;
-                    RemoveDuplicateVerticesAndIndexList(faces, out uniqueVertices, out indices);
+                    RemoveDuplicateVerticesAndIndexList(faces, out IList<FaceVertex> uniqueVertices, out IList<uint> indices);
 
                     // Data: Num Unique Vertices
                     // Data: Unique Vertices
@@ -123,23 +99,11 @@ namespace App
                     // Data: Num Vertex Indices
                     // Data: Vertex Indices
                     bw.Write(indices);
-
-
-                    //Console.WriteLine("Unique Vertices:");
-                    //for(int i = 0; i < verts.Count; i++)
-                    //{
-                    //    Console.WriteLine($"{verts[i].VertexIndex}, {verts[i].TextureIndex}, {verts[i].NormalIndex}");
-                    //}
-                    //Console.WriteLine("Indices:");
-                    //for(int i = 0; i < indices.Count; i++)
-                    //{
-                    //    Console.WriteLine("" + indices[i]);
-                    //}
-
-
                 }
                 bw.Flush();
                 fileStream.Close();
+
+                Console.WriteLine($"Finished after: {(DateTime.Now - start).Milliseconds} ms");
             }
             catch (Exception ex)
             {
@@ -319,9 +283,6 @@ namespace App
 
         public static void Write(this BinaryWriter bw, FaceVertex value, IList<Vertex> positions, IList<Texture> texCoords, IList<Normal> normals)
         {
-            //bw.Write(value.VertexIndex - 1);
-            //bw.Write(value.TextureIndex - 1);
-            //bw.Write(value.NormalIndex - 1);
             bw.Write(positions[value.VertexIndex - 1]);
             bw.Write(texCoords[value.TextureIndex - 1]);
             bw.Write(normals[value.NormalIndex - 1]);
