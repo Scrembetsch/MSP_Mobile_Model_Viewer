@@ -319,6 +319,9 @@ namespace App
 
         public static void Write(this BinaryWriter bw, FaceVertex value, IList<Vertex> positions, IList<Texture> texCoords, IList<Normal> normals)
         {
+            //bw.Write(value.VertexIndex - 1);
+            //bw.Write(value.TextureIndex - 1);
+            //bw.Write(value.NormalIndex - 1);
             bw.Write(positions[value.VertexIndex - 1]);
             bw.Write(texCoords[value.TextureIndex - 1]);
             bw.Write(normals[value.NormalIndex - 1]);
