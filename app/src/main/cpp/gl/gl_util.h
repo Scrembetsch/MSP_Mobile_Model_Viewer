@@ -18,6 +18,7 @@ namespace GlUtil {
     GLuint LoadTexture(AAssetManager* assetManager, const std::string& filepath);
     GLuint LoadPkmTexture(AAssetManager* assetManager, const std::string& filepath);
 
+    void LoadMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
     void LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
     void LoadBinMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes);
 };

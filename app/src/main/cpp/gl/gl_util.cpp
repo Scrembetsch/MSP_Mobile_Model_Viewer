@@ -162,13 +162,10 @@ GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& fi
     glGenTextures(1, &textureID);
 
     AAsset * file = AAssetManager_open (assetManager, filepath.c_str(), AASSET_MODE_UNKNOWN);
-    off_t assetLength = AAsset_getLength (file);
     char * fileData = (char *) AAsset_getBuffer (file);
 
     uint16_t extendedWidth = GetShortBE(fileData + 0x8);
     uint16_t extendedHeight = GetShortBE(fileData + 0xA);
-    //uint16_t originalWidth = GetShortBE(fileData + 0xC);
-    //uint16_t originalHeight = GetShortBE(fileData + 0xE);
 
     uint32_t compressedDataSize = (extendedWidth / 4) * (extendedHeight / 4) * 8;
     char* compressedData = fileData + 0x10;
@@ -183,6 +180,22 @@ GLuint GlUtil::LoadPkmTexture(AAssetManager* assetManager, const std::string& fi
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     return textureID;
+}
+
+void GlUtil::LoadMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
+{
+    if(Util::EndsWith(filename, ".obj"))
+    {
+        LoadObjMeshes(assetManager, path, filename, meshes, numMeshes);
+    }
+    else if(Util::EndsWith(filename, ".leb"))
+    {
+        LoadBinMeshes(assetManager, path, filename, meshes, numMeshes);
+    }
+    else
+    {
+        LOGE("GL_UTIL", "Unsupported filetype: %s", filename.c_str());
+    }
 }
 
 void GlUtil::LoadObjMeshes(AAssetManager* assetManager, const std::string& path, const std::string& filename, Mesh*& meshes, unsigned int& numMeshes)
@@ -236,18 +249,27 @@ void GlUtil::LoadBinMeshes(AAssetManager* assetManager, const std::string& path,
     numMeshes = loader.mNumMeshes;
 
     for(int i = 0; i < loader.mNumMeshes; i++) {
-        Vertex *vertices = new Vertex[loader.mMeshes[i].numIndices];
-        for (int j = 0; j < loader.mMeshes[i].numIndices; j++) {
-            vertices[j].Position[0] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].X;
-            vertices[j].Position[1] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].Y;
-            vertices[j].Position[2] = loader.mVertPos[loader.mMeshes[i].vertexIndex[j]].Z;
-            vertices[j].TexCoord[0] = loader.mTexCoords[loader.mMeshes[i].texIndex[j]].X;
-            vertices[j].TexCoord[1] = loader.mTexCoords[loader.mMeshes[i].texIndex[j]].Y;
-            vertices[j].Normal[0] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].X;
-            vertices[j].Normal[1] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].Y;
-            vertices[j].Normal[2] = loader.mNormals[loader.mMeshes[i].normalIndex[j]].Z;
+        Vertex *vertices = new Vertex[loader.mMeshes[i].numVertices];
+        for (int j = 0; j < loader.mMeshes[i].numVertices; j++) {
+//            vertices[j].Position[0] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].X;
+//            vertices[j].Position[1] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].Y;
+//            vertices[j].Position[2] = loader.mVertPos[loader.mMeshes[i].vertices[j].PositionIndex].Z;
+//            vertices[j].TexCoord[0] = loader.mTexCoords[loader.mMeshes[i].vertices[j].TexCoordIndex].X;
+//            vertices[j].TexCoord[1] = loader.mTexCoords[loader.mMeshes[i].vertices[j].TexCoordIndex].Y;
+//            vertices[j].Normal[0] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].X;
+//            vertices[j].Normal[1] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].Y;
+//            vertices[j].Normal[2] = loader.mNormals[loader.mMeshes[i].vertices[j].NormalIndex].Z;
+
+            vertices[j].Position[0] = loader.mMeshes[i].realVertices[j].Position.X;
+            vertices[j].Position[1] = loader.mMeshes[i].realVertices[j].Position.Y;
+            vertices[j].Position[2] = loader.mMeshes[i].realVertices[j].Position.Z;
+            vertices[j].TexCoord[0] = loader.mMeshes[i].realVertices[j].TextureCoordinate.X;
+            vertices[j].TexCoord[1] = loader.mMeshes[i].realVertices[j].TextureCoordinate.Y;
+            vertices[j].Normal[0] = loader.mMeshes[i].realVertices[j].Normal.X;
+            vertices[j].Normal[1] = loader.mMeshes[i].realVertices[j].Normal.Y;
+            vertices[j].Normal[2] = loader.mMeshes[i].realVertices[j].Normal.Z;
         }
-        meshes[i].Init(vertices, loader.mMeshes[i].numIndices);
+        meshes[i].Init(vertices, loader.mMeshes[i].numVertices, loader.mMeshes[i].indices, loader.mMeshes[i].numIndices);
 
         meshes[i].mMaterial.Diffuse[0] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.X;
         meshes[i].mMaterial.Diffuse[1] = loader.mMaterials[loader.mMeshes[i].materialIndex].Kd.Y;

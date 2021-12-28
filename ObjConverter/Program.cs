@@ -3,6 +3,7 @@ using ObjLoader.Loader.Data;
 using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Data.VertexData;
 using ObjLoader.Loader.Loaders;
+using System.Linq;
 
 namespace App
 {
@@ -11,16 +12,10 @@ namespace App
         public static void Main(string[] _)
         {
             string currentDir = Directory.GetCurrentDirectory() + "\\..\\..\\..\\..\\";
-            string sourceDir = currentDir + "app\\src\\main\\assets\\original\\";
-            string targetDir = currentDir + "app\\src\\main\\assets\\converted\\";
-
-            // Copy all files
-            RecursiveCopy(sourceDir, targetDir, true);
+            string targetDir = currentDir + "app\\src\\main\\assets\\models\\";
 
             // Convert obj & mtl files
             RecursiveObjConversion(targetDir);
-
-            // Delete old obj & mtl files
         }
 
         private static void RecursiveObjConversion(string targetDir)
@@ -83,28 +78,65 @@ namespace App
                 File.Delete(newFile);
                 FileStream fileStream = new FileStream(newFile, FileMode.OpenOrCreate, FileAccess.Write);
                 BinaryWriter bw = new BinaryWriter(fileStream);
-                bw.Write(objResult.Vertices);
-                bw.Write(objResult.Textures);
-                bw.Write(objResult.Normals);
+                // Data: Num Vertices
+                // Data: Vertices
+                //bw.Write(objResult.Vertices);
+                // Data: Num TexCoords
+                // Data: TexCoords
+                //bw.Write(objResult.Textures);
+                // Data: Num Normals
+                // Data:: Normals
+                //bw.Write(objResult.Normals);
+                // Data: Num Materials
+                // Data: Materials
                 bw.Write(objResult.Materials);
 
+                // Data: Num Meshes
                 bw.Write(objResult.Groups.Count);
                 foreach(var group in objResult.Groups)
                 {
                     int index = objResult.Materials.IndexOf(group.Material);
+                    // Data: Mesh Material Index
                     bw.Write(objResult.Materials.IndexOf(group.Material));
-                    List<Face> faces = GroupAndTriangulateFaces(group.Faces, objResult.Vertices);
+                    // Old parser
+                    // Data: Num FaceVertices
+                    //bw.Write(faces.Count * 3);
+                    //foreach (var face in faces)
+                    //{
+                    //    // Data: Face Vertex Indices
+                    //    for(int i = 0; i < face.Count; i++)
+                    //    {
+                    //        bw.Write(face[i].VertexIndex - 1);
+                    //        bw.Write(face[i].TextureIndex - 1);
+                    //        bw.Write(face[i].NormalIndex - 1);
+                    //    }
+                    //}
 
-                    bw.Write(faces.Count * 3);
-                    foreach (var face in faces)
-                    {
-                        for(int i = 0; i < face.Count; i++)
-                        {
-                            bw.Write(face[i].VertexIndex - 1);
-                            bw.Write(face[i].TextureIndex - 1);
-                            bw.Write(face[i].NormalIndex - 1);
-                        }
-                    }
+                    IList<Face> faces = GroupAndTriangulateFaces(group.Faces, objResult.Vertices);
+                    IList<FaceVertex> uniqueVertices;
+                    IList<uint> indices;
+                    RemoveDuplicateVerticesAndIndexList(faces, out uniqueVertices, out indices);
+
+                    // Data: Num Unique Vertices
+                    // Data: Unique Vertices
+                    bw.Write(uniqueVertices, objResult.Vertices, objResult.Textures, objResult.Normals);
+                    // Data: Num Vertex Indices
+                    // Data: Vertex Indices
+                    bw.Write(indices);
+
+
+                    //Console.WriteLine("Unique Vertices:");
+                    //for(int i = 0; i < verts.Count; i++)
+                    //{
+                    //    Console.WriteLine($"{verts[i].VertexIndex}, {verts[i].TextureIndex}, {verts[i].NormalIndex}");
+                    //}
+                    //Console.WriteLine("Indices:");
+                    //for(int i = 0; i < indices.Count; i++)
+                    //{
+                    //    Console.WriteLine("" + indices[i]);
+                    //}
+
+
                 }
                 bw.Flush();
                 fileStream.Close();
@@ -117,7 +149,7 @@ namespace App
             Directory.SetCurrentDirectory(currentDir);
         }
 
-        public static List<Face> GroupAndTriangulateFaces(IList<Face> faces, IList<Vertex> vertices)
+        public static IList<Face> GroupAndTriangulateFaces(IList<Face> faces, IList<Vertex> vertices)
         {
             List<Face> ret = new List<Face>();
 
@@ -137,6 +169,31 @@ namespace App
                 }
             }
             return ret;
+        }
+
+        public static void RemoveDuplicateVerticesAndIndexList(IList<Face> faces, out IList<FaceVertex> uniqueVertices, out IList<uint> indices)
+        {
+            Dictionary<FaceVertex, uint> vertexSet = new();
+            uniqueVertices = new List<FaceVertex>();
+            indices = new List<uint>();
+
+            foreach (var face in faces)
+            {
+                for (int i = 0; i < face.Count; i++)
+                {
+                    if(vertexSet.ContainsKey(face[i]))
+                    {
+                        indices.Add(vertexSet[face[i]]);
+                    }
+                    else
+                    {
+                        vertexSet.Add(face[i], (uint)uniqueVertices.Count);
+                        indices.Add((uint)uniqueVertices.Count);
+
+                        uniqueVertices.Add(face[i]);
+                    }
+                }
+            }
         }
 
         public static Face[] TriangulateQuad(Face face, IList<Vertex> vertices)
@@ -249,6 +306,31 @@ namespace App
             bw.WriteString(value.DisplacementMap);
             bw.WriteString(value.StencilDecalMap);
             bw.WriteString(value.AlphaTextureMap);
+        }
+
+        public static void Write(this BinaryWriter bw, IList<FaceVertex> value, IList<Vertex> positions, IList<Texture> texCoords, IList<Normal> normals)
+        {
+            bw.Write(value.Count);
+            foreach (var val in value)
+            {
+                bw.Write(val, positions, texCoords, normals);
+            }
+        }
+
+        public static void Write(this BinaryWriter bw, FaceVertex value, IList<Vertex> positions, IList<Texture> texCoords, IList<Normal> normals)
+        {
+            bw.Write(positions[value.VertexIndex - 1]);
+            bw.Write(texCoords[value.TextureIndex - 1]);
+            bw.Write(normals[value.NormalIndex - 1]);
+        }
+
+        public static void Write(this BinaryWriter bw, IList<uint> value)
+        {
+            bw.Write(value.Count);
+            foreach (var val in value)
+            {
+                bw.Write(val);
+            }
         }
 
         public static void WriteString(this BinaryWriter bw, string value)
